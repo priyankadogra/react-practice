@@ -1,6 +1,7 @@
 import {useEffect, useState, useReducer} from 'react';
 import UserList from './UserList';
-import type {User} from './types'
+import type {User} from './types';
+import {useTheme} from './context';
 
 async function fetchUsers(): Promise<User[]> {
   return [
@@ -60,20 +61,28 @@ export default function Search() {
   // const [isLoading, setIsLoading] = useState<boolean>(true);
   // const [error, setError] = useState<string>("");
   const [state, dispatch] = useReducer(taskReducer, initialState);
+  console.log("theme - ", useTheme());
 
   useEffect(()=> {
+    const abortController = new AbortController();
+    const {signal} = abortController;
+
     async function loadUsers() {
+
       try{
         dispatch({type: "isLoading"})
         const list = await fetchUsers();
         dispatch({type: "loaded", users: list,})
       }catch(e: unknown) {
+        if(e instanceof  Error && e.name === "AbortError") {console.log("Aborted"); return;}
         dispatch({type: "error", errorMessage: "Error"});
         throw new Error("error");
       }
-      
+            
     }
     loadUsers();
+
+    return () => abortController.abort();
   }, []);
 
   return (
