@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useDebounce } from "../search/utils";
 
 type User = {
     id: number,
@@ -52,7 +51,7 @@ export default function SearchOneComp() {
 
 export function UserList({users}: {users: User[]}) {
     const [query, setQuery] = useState<string>("");
-    const debouncedQuery = useDebounceebounce({query, waitTime: 400})
+    const debouncedQuery = useDebounce({query, waitTime: 400})
     const filteredList = useMemo(() => users.filter((u) => u.name.toLowerCase().includes(debouncedQuery.toLocaleLowerCase())), [users, debouncedQuery]);
 
     return(
